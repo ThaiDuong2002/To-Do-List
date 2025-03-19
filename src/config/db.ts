@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import mysql2 from "mysql2/promise";
+import { DB_CONSTANTS } from "../constants";
 
 dotenv.config();
 
@@ -12,16 +13,14 @@ const pool = mysql2.createPool({
   connectionLimit: 10,
 });
 
-const databaseConnection = {
-  pool: async () => {
-    try {
-      const connection = await pool.getConnection();
+const DB = async () => {
+  try {
+    const connection = await pool.getConnection();
 
-      return connection;
-    } catch (error) {
-      throw new Error("Failed to connect to the database.");
-    }
-  },
+    return connection;
+  } catch (error) {
+    console.log(DB_CONSTANTS.CONNECT_DB_ERROR);
+  }
 };
 
-export default databaseConnection;
+export default DB;
