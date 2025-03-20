@@ -1,6 +1,6 @@
 interface UpdateTaskDto {
   title: string;
-  description: string;
+  description: string | null;
   status: string;
   dueDate: string;
   priority: string;

@@ -1,9 +1,8 @@
 interface CreateTaskDto {
   title: string;
-  description: string;
-  status: string | null;
+  description: string | null;
   dueDate: string;
-  priority: string | null;
+  priority: string;
 }
 
 export default CreateTaskDto;

@@ -20,6 +20,7 @@ class TaskRoutes extends CommonRoutes {
       .all(TaskController.all)
       .get(TaskController.getTaskById)
       .put(TaskController.updateTask)
+      .patch(TaskController.patchTask)
       .delete(TaskController.deleteTask);
 
     this.app

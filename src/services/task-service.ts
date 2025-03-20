@@ -1,5 +1,5 @@
 import { TaskDao } from "../dao";
-import { CreateTaskDto, TaskDto } from "../dto";
+import { CreateTaskDto, TaskDto, UpdateTaskDto } from "../dto";
 import CRUD from "./crud-interface";
 
 class TaskService implements CRUD {
@@ -18,8 +18,8 @@ class TaskService implements CRUD {
   readById(id: string): Promise<any> {
     return TaskDao.findOne(id);
   }
-  putById(id: string, resource: any): Promise<string> {
-    throw new Error("Method not implemented.");
+  putById(id: string, resource: UpdateTaskDto): Promise<string> {
+    return TaskDao.update(id, resource);
   }
   patchById(id: string, resource: any): Promise<string> {
     throw new Error("Method not implemented.");

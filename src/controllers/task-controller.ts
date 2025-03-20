@@ -54,7 +54,19 @@ class TaskController {
   }
 
   async updateTask(req: express.Request, res: express.Response) {
-    res.send("Task updated");
+    const updated = await TaskService.putById(req.params.taskId, req.body);
+
+    const response: ResponseDto = {
+      httpStatus: HTTP_STATUS.OK,
+      message: "Task updated",
+      data: `Task ${updated} updated successfully`,
+    };
+
+    res.status(HTTP_STATUS.OK).json(response);
+  }
+
+  async patchTask(req: express.Request, res: express.Response) {
+    res.send("Task patched");
   }
 
   async deleteTask(req: express.Request, res: express.Response) {

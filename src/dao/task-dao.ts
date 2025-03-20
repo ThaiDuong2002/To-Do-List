@@ -1,25 +1,18 @@
 import { RowDataPacket } from "mysql2";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../config";
-import { CreateTaskDto, TaskDto } from "../dto";
+import { CreateTaskDto, PatchTaskDto, TaskDto, UpdateTaskDto } from "../dto";
 import { TaskMapper } from "../mappers";
 
 class TaskDao {
   public async create(taskFields: CreateTaskDto): Promise<string> {
     try {
-      const { title, description, status, dueDate, priority } = taskFields;
+      const { title, description, dueDate, priority } = taskFields;
       const taskId = uuidv4();
 
       await db().query(
-        "INSERT INTO Tasks (taskid, title, description, status, dueDate, priority) VALUES (?, ?, ?, ?, ?, ?)",
-        [
-          taskId,
-          title,
-          description,
-          status || "Pending",
-          dueDate,
-          priority || "Medium",
-        ]
+        "INSERT INTO Tasks (taskid, title, description, dueDate, priority) VALUES (?, ?, ?, ?, ?)",
+        [taskId, title, description || "", dueDate, priority]
       );
 
       return taskId;
@@ -36,7 +29,7 @@ class TaskDao {
   ): Promise<TaskDto[]> {
     let query = "SELECT * FROM Tasks WHERE 1=1";
     const params = [];
-    
+
     limit = limit || 10;
     page = page || 1;
 
@@ -81,7 +74,28 @@ class TaskDao {
       throw new Error("Error fetching task: " + error);
     }
   }
-  async update(task: TaskDto) {}
+  async update(taskId: string, task: UpdateTaskDto) {
+    try {
+      const { title, description, dueDate, priority, status } = task;
+
+      if (description) {
+        await db().query(
+          "UPDATE Tasks SET Title = ?, Description = ?, DueDate = ?, Priority = ?, Status = ? WHERE TaskId = ?",
+          [title, description, dueDate, priority, status, taskId]
+        );
+      } else {
+        await db().query(
+          "UPDATE Tasks SET Title = ?, DueDate = ?, Priority = ?, Status = ? WHERE TaskId = ?",
+          [title, dueDate, priority, status, taskId]
+        );
+      }
+
+      return taskId;
+    } catch (error) {
+      throw new Error("Error updating task: " + error);
+    }
+  }
+  async patch(taskId: string, taskFields: PatchTaskDto) {}
   async delete(taskId: string) {}
 }
 
