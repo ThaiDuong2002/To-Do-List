@@ -7,7 +7,7 @@ class TaskService implements CRUD {
     throw new Error("Method not implemented.");
   }
   create(resource: CreateTaskDto): Promise<any> {
-    return TaskDao.addTask(resource);
+    return TaskDao.create(resource);
   }
   readById(id: string): Promise<any> {
     throw new Error("Method not implemented.");
