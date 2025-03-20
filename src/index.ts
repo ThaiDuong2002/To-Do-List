@@ -4,7 +4,7 @@ import express from "express";
 import morgan from "morgan";
 import { DB } from "./config";
 import { SERVER_CONSTANTS } from "./constants";
-import { errorHelper } from "./helpers";
+import { ErrorHelper } from "./helpers";
 import TaskRoutes from "./routes";
 import CommonRoutes from "./routes/common-route";
 
@@ -30,6 +30,6 @@ app.listen(port, async () => {
   });
 
   // Error handling middleware
-  app.use(errorHelper.notFound);
-  app.use(errorHelper.errorHandler);
+  app.use(ErrorHelper.notFound);
+  app.use(ErrorHelper.errorHandler);
 });

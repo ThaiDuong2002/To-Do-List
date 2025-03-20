@@ -17,7 +17,7 @@ class TaskRoutes extends CommonRoutes {
 
     this.app
       .route(`${this.version}/tasks/:taskId`)
-      .all()
+      .all(TaskController.all)
       .get(TaskController.getTaskById)
       .put(TaskController.updateTask)
       .delete(TaskController.deleteTask);

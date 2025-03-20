@@ -1,3 +1,3 @@
-import errorHelper from "./error-helper";
+import ErrorHelper from "./error-helper";
 
-export { errorHelper };
+export { ErrorHelper };

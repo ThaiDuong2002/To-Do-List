@@ -1,7 +1,7 @@
-interface ResponseDTO {
-  status: number;
+interface ResponseDto {
+  httpStatus: number;
   message: string;
   data: any;
 }
 
-export default ResponseDTO;
+export default ResponseDto;

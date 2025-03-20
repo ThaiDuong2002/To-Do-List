@@ -1,6 +1,14 @@
 import express from "express";
 
 class TaskController {
+  async all(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    next();
+  }
+  
   async listTasks(req: express.Request, res: express.Response) {
     res.send("List of tasks");
   }
