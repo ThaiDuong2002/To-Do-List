@@ -1,8 +1,8 @@
 import { TaskDao } from "../dao";
 import { CreateTaskDto, PatchTaskDto, TaskDto, UpdateTaskDto } from "../dto";
-import CRUD from "./crud-interface";
+import TaskServiceInterface from "./interfaces/task-service-interface";
 
-class TaskService implements CRUD {
+class TaskService implements TaskServiceInterface {
   async list(
     limit?: number,
     page?: number,
@@ -12,7 +12,7 @@ class TaskService implements CRUD {
     return TaskDao.findAll(limit, page, status, priority);
   }
 
-  async create(resource: CreateTaskDto): Promise<any> {
+  async create(resource: CreateTaskDto): Promise<string | null> {
     return TaskDao.create(resource);
   }
 

@@ -1,4 +1,4 @@
-interface CRUD {
+interface TaskServiceInterface {
   list(
     limit?: number,
     page?: number,
@@ -12,4 +12,4 @@ interface CRUD {
   deleteById(id: string): Promise<number>;
 }
 
-export default CRUD;
+export default TaskServiceInterface;

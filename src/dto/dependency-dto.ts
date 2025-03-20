@@ -1,7 +1,7 @@
 interface DependencyDto {
   id: string;
   taskId: string;
-  dependsOnTaskTd: string;
+  dependsOnTaskId: string;
 }
 
 export default DependencyDto;

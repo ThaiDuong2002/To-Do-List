@@ -29,7 +29,7 @@ class TaskRoutes extends CommonRoutes {
       .get(TaskController.listTaskDependencies);
 
     this.app
-      .route(`${this.version}/tasks/:taskId/dependencies/:dependencyId`)
+      .route(`${this.version}/tasks/:taskId/dependencies/:dependsOnTaskId`)
       .delete(TaskController.deleteTaskDependency);
 
     return this.app;

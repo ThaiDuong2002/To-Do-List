@@ -1,7 +1,7 @@
 import express from "express";
 import { HTTP_STATUS } from "../constants";
 import { ResponseDto } from "../dto";
-import { TaskService } from "../services";
+import { DependencyService, TaskService } from "../services";
 
 class TaskController {
   async all(
@@ -90,7 +90,18 @@ class TaskController {
   }
 
   async createTaskDependency(req: express.Request, res: express.Response) {
-    res.send("Task dependency created");
+    const id = await DependencyService.create(
+      req.params.taskId,
+      req.body.dependsOnTaskId
+    );
+
+    const response: ResponseDto = {
+      httpStatus: HTTP_STATUS.CREATED,
+      message: "Task dependency created",
+      data: id,
+    };
+
+    res.status(HTTP_STATUS.CREATED).json(response);
   }
 
   async listTaskDependencies(req: express.Request, res: express.Response) {
@@ -98,7 +109,18 @@ class TaskController {
   }
 
   async deleteTaskDependency(req: express.Request, res: express.Response) {
-    res.send("Task dependency deleted");
+    const deleted = await DependencyService.delete(
+      req.params.taskId,
+      req.params.dependsOnTaskId
+    );
+
+    const response: ResponseDto = {
+      httpStatus: HTTP_STATUS.OK,
+      message: "Task dependency deleted",
+      data: `Task dependency ${deleted} deleted successfully`,
+    };
+
+    res.status(HTTP_STATUS.OK).json(response);
   }
 }
 
