@@ -1,11 +1,17 @@
 import { TaskDao } from "../dao";
-import { CreateTaskDto } from "../dto";
+import { CreateTaskDto, TaskDto } from "../dto";
 import CRUD from "./crud-interface";
 
 class TaskService implements CRUD {
-  list(limit: number, page: number, filter: any): Promise<any> {
-    throw new Error("Method not implemented.");
+  list(
+    limit: number,
+    page: number,
+    status?: string,
+    priority?: string
+  ): Promise<TaskDto[]> {
+    return TaskDao.findAll(limit, page, status, priority);
   }
+
   create(resource: CreateTaskDto): Promise<any> {
     return TaskDao.create(resource);
   }

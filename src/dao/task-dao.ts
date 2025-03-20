@@ -1,6 +1,8 @@
+import { RowDataPacket } from "mysql2";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../config";
 import { CreateTaskDto, TaskDto } from "../dto";
+import { TaskMapper } from "../mappers";
 
 class TaskDao {
   public async create(taskFields: CreateTaskDto): Promise<string> {
@@ -26,7 +28,39 @@ class TaskDao {
     }
   }
 
-  async findAll() {}
+  async findAll(
+    limit: number,
+    page: number,
+    status?: string,
+    priority?: string
+  ): Promise<TaskDto[]> {
+    let query = "SELECT * FROM Tasks WHERE 1=1";
+    const params = [];
+    const offset = (page - 1) * limit;
+
+    if (status) {
+      query += " AND Status = ?";
+      params.push(status);
+    }
+    if (priority) {
+      query += " AND Priority = ?";
+      params.push(priority);
+    }
+    query += " LIMIT ? OFFSET ?";
+    params.push(limit, offset);
+
+    try {
+      const [tasks] = await db().query<RowDataPacket[]>(query, params);
+
+      const taskDtos = tasks.map((task) => {
+        return TaskMapper.toDto(task);
+      });
+
+      return taskDtos;
+    } catch (error) {
+      throw new Error("Error fetching tasks: " + error);
+    }
+  }
   async findOne(taskId: string) {}
   async update(task: TaskDto) {}
   async delete(taskId: string) {}
