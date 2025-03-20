@@ -13,13 +13,11 @@
   "license": "ISC",
   "description": "A to-do list server",
   "dependencies": {
-    "class-transformer": "^0.5.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "morgan": "^1.10.0",
-    "mysql2": "^3.13.0",
-    "reflect-metadata": "^0.2.2"
+    "mysql2": "^3.13.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

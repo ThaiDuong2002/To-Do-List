@@ -5,25 +5,31 @@ import morgan from "morgan";
 import { DB } from "./config";
 import { SERVER_CONSTANTS } from "./constants";
 import { errorHelper } from "./helpers";
-import routes from "./routes";
+import TaskRoutes from "./routes";
+import CommonRoutes from "./routes/common-route";
 
 dotenv.config();
 
-const app = express();
+const app: express.Application = express();
+const routes: Array<CommonRoutes> = [];
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-// app.use(morgan("dev"));
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-routes(app);
-
-// Error handling middleware
-app.use(errorHelper.notFound);
-app.use(errorHelper.errorHandler);
+routes.push(new TaskRoutes(app));
 
 app.listen(port, async () => {
   await DB();
   console.log(`${SERVER_CONSTANTS.SERVER_START_SUCCESS}${port}`);
+
+  routes.forEach((route: CommonRoutes) => {
+    route.configureRoutes();
+  });
+
+  // Error handling middleware
+  app.use(errorHelper.notFound);
+  app.use(errorHelper.errorHandler);
 });

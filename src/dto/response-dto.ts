@@ -1,7 +1,7 @@
-class ResponseDTO {
-  private status: number;
-  private message: string;
-  private data: any;
+interface ResponseDTO {
+  status: number;
+  message: string;
+  data: any;
 }
 
 export default ResponseDTO;

@@ -1,27 +1,38 @@
 import express from "express";
-import { taskController } from "../controllers";
+import { TaskController } from "../controllers";
+import CommonRoutes from "./common-route";
 
-const taskRouter = express.Router();
+class TaskRoutes extends CommonRoutes {
+  private version: string = "/api/v1";
 
-// Api routes for tasks
-taskRouter.get("/api/v1/tasks", taskController.getTasks);
-taskRouter.get("/api/v1/tasks/:taskId", taskController.getTask);
-taskRouter.post("/api/v1/tasks", taskController.createTask);
-taskRouter.put("/api/v1/tasks/:taskId", taskController.updateTask);
-taskRouter.delete("/api/v1/tasks/:taskId", taskController.deleteTask);
+  constructor(app: express.Application) {
+    super(app, "TaskRoutes");
+  }
 
-// Api routes for task's dependencies
-taskRouter.post(
-  "/api/v1/tasks/:taskId/dependencies",
-  taskController.createTaskDependency
-);
-taskRouter.get(
-  "/api/v1/tasks/:taskId/dependencies",
-  taskController.getTaskDependencies
-);
-taskRouter.delete(
-  "/api/v1/tasks/:taskId/dependencies/:dependencyId",
-  taskController.deleteTaskDependency
-);
+  configureRoutes(): express.Application {
+    this.app
+      .route(`${this.version}/tasks`)
+      .get(TaskController.listTasks)
+      .post(TaskController.createTask);
 
-export default taskRouter;
+    this.app
+      .route(`${this.version}/tasks/:taskId`)
+      .all()
+      .get(TaskController.getTaskById)
+      .put(TaskController.updateTask)
+      .delete(TaskController.deleteTask);
+
+    this.app
+      .route(`${this.version}/tasks/:taskId/dependencies`)
+      .post(TaskController.createTaskDependency)
+      .get(TaskController.listTaskDependencies);
+
+    this.app
+      .route(`${this.version}/tasks/:taskId/dependencies/:dependencyId`)
+      .delete(TaskController.deleteTaskDependency);
+
+    return this.app;
+  }
+}
+
+export default TaskRoutes;

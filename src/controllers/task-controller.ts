@@ -1,30 +1,37 @@
-import { Request, Response } from "express";
+import express from "express";
 
-const taskController = {
-  getTasks: async (req: Request, res: Response) => {
-    res.json({ message: "Get all tasks" });
-  },
-  getTask: async (req: Request, res: Response) => {
-    res.json({ message: "Get a task" });
-  },
-  updateTask: async (req: Request, res: Response) => {
-    res.json({ message: "Update a task" });
-  },
-  createTask: async (req: Request, res: Response) => {
-    res.json({ message: "Create a task" });
-  },
-  deleteTask: async (req: Request, res: Response) => {
-    res.json({ message: "Delete a task" });
-  },
-  createTaskDependency: async (req: Request, res: Response) => {
-    res.json({ message: "Create a task dependency" });
-  },
-  getTaskDependencies: async (req: Request, res: Response) => {
-    res.json({ message: "Get task dependencies" });
-  },
-  deleteTaskDependency: async (req: Request, res: Response) => {
-    res.json({ message: "Delete a task dependency" });
-  },
-};
+class TaskController {
+  async listTasks(req: express.Request, res: express.Response) {
+    res.send("List of tasks");
+  }
 
-export default taskController;
+  async createTask(req: express.Request, res: express.Response) {
+    res.send("Task created");
+  }
+
+  async getTaskById(req: express.Request, res: express.Response) {
+    res.send("Task details");
+  }
+
+  async updateTask(req: express.Request, res: express.Response) {
+    res.send("Task updated");
+  }
+
+  async deleteTask(req: express.Request, res: express.Response) {
+    res.send("Task deleted");
+  }
+
+  async createTaskDependency(req: express.Request, res: express.Response) {
+    res.send("Task dependency created");
+  }
+
+  async listTaskDependencies(req: express.Request, res: express.Response) {
+    res.send("List of task dependencies");
+  }
+
+  async deleteTaskDependency(req: express.Request, res: express.Response) {
+    res.send("Task dependency deleted");
+  }
+}
+
+export default new TaskController();

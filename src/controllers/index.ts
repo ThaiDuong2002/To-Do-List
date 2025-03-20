@@ -1,3 +1,3 @@
-import taskController from "./task-controller";
+import TaskController from "./task-controller";
 
-export { taskController };
+export { TaskController };

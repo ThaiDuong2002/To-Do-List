@@ -1,31 +1,27 @@
-import { instanceToPlain } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import { HTTP_STATUS, SERVER_CONSTANTS } from "../constants";
 import ErrorResponseDto from "../dto/error-reponse-dto";
 
 const errorHelper = {
   notFound: (req: Request, res: Response, _: NextFunction) => {
-    const errorDto = new ErrorResponseDto(
-      SERVER_CONSTANTS.ROUTE_NOT_FOUND,
-      HTTP_STATUS.INTERNAL_SERVER_ERROR,
-      req.originalUrl,
-      new Date().toLocaleString()
-    );
+    const errorDto: ErrorResponseDto = {
+      errorMessage: SERVER_CONSTANTS.INTERNAL_SERVER_ERROR,
+      httpStatus: HTTP_STATUS.NOT_FOUND,
+      apiPath: req.originalUrl,
+      timestamp: new Date().toLocaleString(),
+    };
 
-    const error = instanceToPlain(errorDto);
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(error);
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(errorDto);
   },
   errorHandler: (err: Error, req: Request, res: Response, _: NextFunction) => {
-    const errorDto = new ErrorResponseDto(
-      err.message,
-      HTTP_STATUS.INTERNAL_SERVER_ERROR,
-      req.originalUrl,
-      new Date().toLocaleString()
-    );
+    const errorDto: ErrorResponseDto = {
+      errorMessage: err.message,
+      httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      apiPath: req.originalUrl,
+      timestamp: new Date().toLocaleString(),
+    };
 
-    const error = instanceToPlain(errorDto);
-
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(error);
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(errorDto);
   },
 };
 
