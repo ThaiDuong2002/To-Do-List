@@ -29,13 +29,17 @@ class TaskDao {
   }
 
   async findAll(
-    limit: number,
-    page: number,
+    limit?: number,
+    page?: number,
     status?: string,
     priority?: string
   ): Promise<TaskDto[]> {
     let query = "SELECT * FROM Tasks WHERE 1=1";
     const params = [];
+    
+    limit = limit || 10;
+    page = page || 1;
+
     const offset = (page - 1) * limit;
 
     if (status) {
@@ -61,7 +65,22 @@ class TaskDao {
       throw new Error("Error fetching tasks: " + error);
     }
   }
-  async findOne(taskId: string) {}
+  async findOne(taskId: string) {
+    try {
+      const [tasks] = await db().query<RowDataPacket[]>(
+        "SELECT * FROM Tasks WHERE TaskId = ?",
+        [taskId]
+      );
+
+      if (tasks.length === 0) {
+        return null;
+      }
+
+      return TaskMapper.toDto(tasks[0]);
+    } catch (error) {
+      throw new Error("Error fetching task: " + error);
+    }
+  }
   async update(task: TaskDto) {}
   async delete(taskId: string) {}
 }

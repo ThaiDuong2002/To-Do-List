@@ -4,8 +4,8 @@ import CRUD from "./crud-interface";
 
 class TaskService implements CRUD {
   list(
-    limit: number,
-    page: number,
+    limit?: number,
+    page?: number,
     status?: string,
     priority?: string
   ): Promise<TaskDto[]> {
@@ -16,7 +16,7 @@ class TaskService implements CRUD {
     return TaskDao.create(resource);
   }
   readById(id: string): Promise<any> {
-    throw new Error("Method not implemented.");
+    return TaskDao.findOne(id);
   }
   putById(id: string, resource: any): Promise<string> {
     throw new Error("Method not implemented.");

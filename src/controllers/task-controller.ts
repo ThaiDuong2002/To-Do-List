@@ -42,7 +42,15 @@ class TaskController {
   }
 
   async getTaskById(req: express.Request, res: express.Response) {
-    res.send("Task details");
+    const task = await TaskService.readById(req.params.taskId);
+
+    const response: ResponseDto = {
+      httpStatus: HTTP_STATUS.OK,
+      message: "Task details",
+      data: task,
+    };
+
+    res.status(HTTP_STATUS.OK).json(response);
   }
 
   async updateTask(req: express.Request, res: express.Response) {

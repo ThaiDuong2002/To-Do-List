@@ -1,7 +1,7 @@
 interface CRUD {
   list(
-    limit: number,
-    page: number,
+    limit?: number,
+    page?: number,
     status?: string,
     priority?: string
   ): Promise<any>;
