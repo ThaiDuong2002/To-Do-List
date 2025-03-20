@@ -1,4 +1,7 @@
 import express from "express";
+import { HTTP_STATUS } from "../constants";
+import { ResponseDto } from "../dto";
+import { TaskService } from "../services";
 
 class TaskController {
   async all(
@@ -8,13 +11,19 @@ class TaskController {
   ) {
     next();
   }
-  
+
   async listTasks(req: express.Request, res: express.Response) {
     res.send("List of tasks");
   }
 
   async createTask(req: express.Request, res: express.Response) {
-    res.send("Task created");
+    const id = await TaskService.create(req.body);
+    const response: ResponseDto = {
+      message: "Task created",
+      data: id,
+      httpStatus: HTTP_STATUS.CREATED,
+    };
+    res.status(HTTP_STATUS.CREATED).json(response);
   }
 
   async getTaskById(req: express.Request, res: express.Response) {

@@ -1,4 +1,7 @@
+import CreateTaskDto from "./create-task-dto";
+import DependencyDto from "./dependency-dto";
 import ErrorResponseDto from "./error-reponse-dto";
 import ResponseDto from "./response-dto";
+import TaskDto from "./task-dto";
 
-export { ErrorResponseDto, ResponseDto };
+export { CreateTaskDto, DependencyDto, ErrorResponseDto, ResponseDto, TaskDto };

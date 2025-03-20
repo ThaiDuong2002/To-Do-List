@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
-import { DB } from "./config";
+import { connection } from "./config";
 import { SERVER_CONSTANTS } from "./constants";
 import { ErrorHelper } from "./helpers";
 import TaskRoutes from "./routes";
@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 routes.push(new TaskRoutes(app));
 
 app.listen(port, async () => {
-  await DB();
+  connection();
   console.log(`${SERVER_CONSTANTS.SERVER_START_SUCCESS}${port}`);
 
   routes.forEach((route: CommonRoutes) => {

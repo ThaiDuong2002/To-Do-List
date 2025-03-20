@@ -8,3 +8,5 @@ interface TaskDto {
   createdAt: string;
   updatedAt: string;
 }
+
+export default TaskDto;
