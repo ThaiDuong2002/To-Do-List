@@ -7,13 +7,16 @@ import { TaskMapper } from "../mappers";
 class TaskDao {
   public async create(taskFields: CreateTaskDto): Promise<string> {
     try {
-      const { title, description, dueDate, priority } = taskFields;
+      const fields = Object.keys(taskFields);
+      const values = Object.values(taskFields);
+
       const taskId = uuidv4();
 
-      await db().query(
-        "INSERT INTO Tasks (taskid, title, description, dueDate, priority) VALUES (?, ?, ?, ?, ?)",
-        [taskId, title, description || "", dueDate, priority]
-      );
+      const query = `INSERT INTO Tasks (TaskId, ${fields.join(
+        ", "
+      )}) VALUES (?, ${fields.map(() => "?").join(", ")})`;
+
+      await db().query(query, [taskId, ...values]);
 
       return taskId;
     } catch (error) {
@@ -58,6 +61,7 @@ class TaskDao {
       throw new Error("Error fetching tasks: " + error);
     }
   }
+
   async findOne(taskId: string) {
     try {
       const [tasks] = await db().query<RowDataPacket[]>(
@@ -74,28 +78,41 @@ class TaskDao {
       throw new Error("Error fetching task: " + error);
     }
   }
-  async update(taskId: string, task: UpdateTaskDto) {
+  async update(taskId: string, taskFields: UpdateTaskDto) {
     try {
-      const { title, description, dueDate, priority, status } = task;
+      const fields = Object.keys(taskFields);
+      const values = Object.values(taskFields);
 
-      if (description) {
-        await db().query(
-          "UPDATE Tasks SET Title = ?, Description = ?, DueDate = ?, Priority = ?, Status = ? WHERE TaskId = ?",
-          [title, description, dueDate, priority, status, taskId]
-        );
-      } else {
-        await db().query(
-          "UPDATE Tasks SET Title = ?, DueDate = ?, Priority = ?, Status = ? WHERE TaskId = ?",
-          [title, dueDate, priority, status, taskId]
-        );
-      }
+      const setFields = fields.map((field) => `${field} = ?`).join(", ");
+
+      await db().query(`UPDATE Tasks SET ${setFields} WHERE TaskId = ?`, [
+        ...values,
+        taskId,
+      ]);
 
       return taskId;
     } catch (error) {
       throw new Error("Error updating task: " + error);
     }
   }
-  async patch(taskId: string, taskFields: PatchTaskDto) {}
+  
+  async patch(taskId: string, taskFields: PatchTaskDto) {
+    try {
+      const fields = Object.keys(taskFields);
+      const values = Object.values(taskFields);
+
+      const setFields = fields.map((field) => `${field} = ?`).join(", ");
+
+      await db().query(`UPDATE Tasks SET ${setFields} WHERE TaskId = ?`, [
+        ...values,
+        taskId,
+      ]);
+
+      return taskId;
+    } catch (error) {
+      throw new Error("Error patching task: " + error);
+    }
+  }
   async delete(taskId: string) {}
 }
 
