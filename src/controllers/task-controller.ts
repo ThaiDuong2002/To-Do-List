@@ -78,7 +78,15 @@ class TaskController {
   }
 
   async deleteTask(req: express.Request, res: express.Response) {
-    res.send("Task deleted");
+    const deleted = await TaskService.deleteById(req.params.taskId);
+
+    const response: ResponseDto = {
+      httpStatus: HTTP_STATUS.OK,
+      message: "Task deleted",
+      data: `Task ${deleted} deleted successfully`,
+    };
+
+    res.status(HTTP_STATUS.OK).json(response);
   }
 
   async createTaskDependency(req: express.Request, res: express.Response) {

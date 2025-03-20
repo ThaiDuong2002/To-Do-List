@@ -1,11 +1,11 @@
-import { RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../config";
 import { CreateTaskDto, PatchTaskDto, TaskDto, UpdateTaskDto } from "../dto";
 import { TaskMapper } from "../mappers";
 
 class TaskDao {
-  public async create(taskFields: CreateTaskDto): Promise<string> {
+  public async create(taskFields: CreateTaskDto): Promise<string | null> {
     try {
       const fields = Object.keys(taskFields);
       const values = Object.values(taskFields);
@@ -16,9 +16,16 @@ class TaskDao {
         ", "
       )}) VALUES (?, ${fields.map(() => "?").join(", ")})`;
 
-      await db().query(query, [taskId, ...values]);
+      const [result] = await db().query<ResultSetHeader>(query, [
+        taskId,
+        ...values,
+      ]);
 
-      return taskId;
+      if (result.affectedRows === 0) {
+        return null;
+      } else {
+        return taskId;
+      }
     } catch (error) {
       throw new Error("Error creating task: " + error);
     }
@@ -62,7 +69,7 @@ class TaskDao {
     }
   }
 
-  async findOne(taskId: string) {
+  async findOne(taskId: string): Promise<TaskDto | null> {
     try {
       const [tasks] = await db().query<RowDataPacket[]>(
         "SELECT * FROM Tasks WHERE TaskId = ?",
@@ -78,42 +85,55 @@ class TaskDao {
       throw new Error("Error fetching task: " + error);
     }
   }
-  async update(taskId: string, taskFields: UpdateTaskDto) {
+
+  async update(taskId: string, taskFields: UpdateTaskDto): Promise<number> {
     try {
       const fields = Object.keys(taskFields);
       const values = Object.values(taskFields);
 
       const setFields = fields.map((field) => `${field} = ?`).join(", ");
 
-      await db().query(`UPDATE Tasks SET ${setFields} WHERE TaskId = ?`, [
-        ...values,
-        taskId,
-      ]);
+      const [results] = await db().query<ResultSetHeader>(
+        `UPDATE Tasks SET ${setFields} WHERE TaskId = ?`,
+        [...values, taskId]
+      );
 
-      return taskId;
+      return results.affectedRows;
     } catch (error) {
       throw new Error("Error updating task: " + error);
     }
   }
-  
-  async patch(taskId: string, taskFields: PatchTaskDto) {
+
+  async patch(taskId: string, taskFields: PatchTaskDto): Promise<number> {
     try {
       const fields = Object.keys(taskFields);
       const values = Object.values(taskFields);
 
       const setFields = fields.map((field) => `${field} = ?`).join(", ");
 
-      await db().query(`UPDATE Tasks SET ${setFields} WHERE TaskId = ?`, [
-        ...values,
-        taskId,
-      ]);
+      const [result] = await db().query<ResultSetHeader>(
+        `UPDATE Tasks SET ${setFields} WHERE TaskId = ?`,
+        [...values, taskId]
+      );
 
-      return taskId;
+      return result.affectedRows;
     } catch (error) {
       throw new Error("Error patching task: " + error);
     }
   }
-  async delete(taskId: string) {}
+
+  async delete(taskId: string): Promise<number> {
+    try {
+      const [result] = await db().query<ResultSetHeader>(
+        "DELETE FROM Tasks WHERE TaskId = ?",
+        [taskId]
+      );
+
+      return result.affectedRows;
+    } catch (error) {
+      throw new Error("Error deleting task: " + error);
+    }
+  }
 }
 
 export default new TaskDao();

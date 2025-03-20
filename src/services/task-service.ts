@@ -3,7 +3,7 @@ import { CreateTaskDto, PatchTaskDto, TaskDto, UpdateTaskDto } from "../dto";
 import CRUD from "./crud-interface";
 
 class TaskService implements CRUD {
-  list(
+  async list(
     limit?: number,
     page?: number,
     status?: string,
@@ -12,24 +12,28 @@ class TaskService implements CRUD {
     return TaskDao.findAll(limit, page, status, priority);
   }
 
-  create(resource: CreateTaskDto): Promise<any> {
+  async create(resource: CreateTaskDto): Promise<any> {
     return TaskDao.create(resource);
   }
-  
-  readById(id: string): Promise<any> {
-    return TaskDao.findOne(id);
+
+  async readById(id: string): Promise<TaskDto> {
+    const result = await TaskDao.findOne(id);
+    if (!result) {
+      throw new Error("Task not found");
+    }
+    return result;
   }
 
-  putById(id: string, resource: UpdateTaskDto): Promise<string> {
+  async putById(id: string, resource: UpdateTaskDto): Promise<number> {
     return TaskDao.update(id, resource);
   }
 
-  patchById(id: string, resource: PatchTaskDto): Promise<string> {
+  async patchById(id: string, resource: PatchTaskDto): Promise<number> {
     return TaskDao.patch(id, resource);
   }
 
-  deleteById(id: string): Promise<string> {
-    throw new Error("Method not implemented.");
+  async deleteById(id: string): Promise<number> {
+    return TaskDao.delete(id);
   }
 }
 

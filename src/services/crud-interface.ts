@@ -7,9 +7,9 @@ interface CRUD {
   ): Promise<any>;
   create(resource: any): Promise<any>;
   readById(id: string): Promise<any>;
-  putById(id: string, resource: any): Promise<string>;
-  patchById(id: string, resource: any): Promise<string>;
-  deleteById(id: string): Promise<string>;
+  putById(id: string, resource: any): Promise<number>;
+  patchById(id: string, resource: any): Promise<number>;
+  deleteById(id: string): Promise<number>;
 }
 
 export default CRUD;
