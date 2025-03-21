@@ -1,7 +1,9 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../config";
+import { ERROR_MESSAGES } from "../constants";
 import { CreateTaskDto, PatchTaskDto, TaskDto, UpdateTaskDto } from "../dto";
+import { DatabaseErrorException } from "../exceptions";
 import { TaskMapper } from "../mappers";
 
 class TaskDao {
@@ -26,8 +28,8 @@ class TaskDao {
       } else {
         return taskId;
       }
-    } catch (error) {
-      throw new Error("Error creating task: " + error);
+    } catch {
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 
@@ -64,8 +66,8 @@ class TaskDao {
       });
 
       return taskDtos;
-    } catch (error) {
-      throw new Error("Error fetching tasks: " + error);
+    } catch {
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 
@@ -82,7 +84,7 @@ class TaskDao {
 
       return TaskMapper.toDto(tasks[0]);
     } catch (error) {
-      throw new Error("Error fetching task: " + error);
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 
@@ -100,7 +102,7 @@ class TaskDao {
 
       return results.affectedRows;
     } catch (error) {
-      throw new Error("Error updating task: " + error);
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 
@@ -118,7 +120,7 @@ class TaskDao {
 
       return result.affectedRows;
     } catch (error) {
-      throw new Error("Error patching task: " + error);
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 
@@ -131,7 +133,7 @@ class TaskDao {
 
       return result.affectedRows;
     } catch (error) {
-      throw new Error("Error deleting task: " + error);
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 }

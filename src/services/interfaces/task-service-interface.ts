@@ -7,9 +7,9 @@ interface TaskServiceInterface {
   ): Promise<any>;
   create(resource: any): Promise<any>;
   readById(id: string): Promise<any>;
-  putById(id: string, resource: any): Promise<number>;
-  patchById(id: string, resource: any): Promise<number>;
-  deleteById(id: string): Promise<number>;
+  putById(id: string, resource: any): Promise<void>;
+  patchById(id: string, resource: any): Promise<void>;
+  deleteById(id: string): Promise<void>;
 }
 
 export default TaskServiceInterface;
