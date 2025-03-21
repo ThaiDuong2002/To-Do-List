@@ -1,6 +1,8 @@
-import { ResultSetHeader } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../config";
+import { DependencyDto } from "../dto";
+import { DependencyMapper } from "../mappers";
 
 class DependencyDao {
   public async create(id: string, dependsOnId: string): Promise<string | null> {
@@ -35,8 +37,26 @@ class DependencyDao {
     }
   }
 
-  public async list(id: string): Promise<any> {
-    throw new Error("Method not implemented.");
+  public async list(id: string): Promise<DependencyDto[]> {
+    try {
+      const query = `
+        WITH RECURSIVE DependencyTree AS (
+            SELECT TaskID, DependsOnTaskID
+            FROM Dependencies
+            WHERE TaskID = ?
+            UNION
+            SELECT td.TaskID, td.DependsOnTaskID
+            FROM Dependencies td
+            INNER JOIN DependencyTree dt ON td.TaskID = dt.DependsOnTaskID
+        )
+        SELECT * FROM DependencyTree;
+      `;
+      const [results] = await db().query<RowDataPacket[]>(query, [id]);
+      
+      return results.map((row) => DependencyMapper.toDto(row));
+    } catch (error) {
+      throw new Error(`Error listing dependencies: ${error}`);
+    }
   }
 }
 

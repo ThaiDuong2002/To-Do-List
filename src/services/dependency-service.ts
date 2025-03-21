@@ -1,9 +1,10 @@
 import { DependencyDao } from "../dao";
+import { DependencyDto } from "../dto";
 import DependencyServiceInterface from "./interfaces/dependency-service-interface";
 
 class DependencyService implements DependencyServiceInterface {
-  async list(id: string): Promise<any> {
-    throw new Error("Method not implemented.");
+  async list(id: string): Promise<DependencyDto[]> {
+    return DependencyDao.list(id);
   }
 
   async create(id: string, dependsOnId: string): Promise<string | null> {

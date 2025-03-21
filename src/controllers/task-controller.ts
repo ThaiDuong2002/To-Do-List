@@ -105,7 +105,15 @@ class TaskController {
   }
 
   async listTaskDependencies(req: express.Request, res: express.Response) {
-    res.send("List of task dependencies");
+    const dependencies = await DependencyService.list(req.params.taskId);
+
+    const response: ResponseDto = {
+      httpStatus: HTTP_STATUS.OK,
+      message: "List of task dependencies",
+      data: dependencies,
+    };
+
+    res.status(HTTP_STATUS.OK).json(response);
   }
 
   async deleteTaskDependency(req: express.Request, res: express.Response) {
