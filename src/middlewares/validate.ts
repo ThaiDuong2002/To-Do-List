@@ -5,6 +5,7 @@ import { ErrorResponseDto } from "../dto";
 import {
   createDependencyScheme,
   createTaskScheme,
+  patchTaskScheme,
   updateTaskScheme,
 } from "../schemas";
 
@@ -28,10 +29,12 @@ const validate =
 const createTaskValidation = validate(createTaskScheme);
 const updateTaskValidation = validate(updateTaskScheme);
 const createDependencyValidation = validate(createDependencyScheme);
+const patchTaskValidation = validate(patchTaskScheme);
 
 export default validate;
 export {
   createDependencyValidation,
   createTaskValidation,
+  patchTaskValidation,
   updateTaskValidation,
 };

@@ -3,6 +3,7 @@ import { TaskController } from "../controllers";
 import {
   createDependencyValidation,
   createTaskValidation,
+  patchTaskValidation,
   updateTaskValidation,
 } from "../middlewares/validate";
 import CommonRoutes from "./common-route";
@@ -25,7 +26,7 @@ class TaskRoutes extends CommonRoutes {
       .all(TaskController.all)
       .get(TaskController.getTaskById)
       .put(updateTaskValidation, TaskController.updateTask)
-      .patch(TaskController.patchTask)
+      .patch(patchTaskValidation, TaskController.patchTask)
       .delete(TaskController.deleteTask);
 
     this.app
