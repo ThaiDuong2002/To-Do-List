@@ -4,6 +4,7 @@ import { ErrorResponseDto, ResponseDto } from "../dto";
 import {
   CreateTaskFailedException,
   DatabaseErrorException,
+  DeleteDependencyFailedException,
   DeleteTaskFailedException,
   InternalErrorServerException,
   TaskNotFoundException,
@@ -60,7 +61,7 @@ class TaskController {
       } else {
         const response: ErrorResponseDto = {
           httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
-          errorMessage: "Something went wrong! Please try again later.",
+          errorMessage: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
           apiPath: req.path,
           timestamp: new Date().toISOString(),
         };
@@ -111,7 +112,7 @@ class TaskController {
       } else {
         const response: ErrorResponseDto = {
           httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
-          errorMessage: "Something went wrong! Please try again later.",
+          errorMessage: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
           apiPath: req.path,
           timestamp: new Date().toISOString(),
         };
@@ -163,7 +164,7 @@ class TaskController {
       } else {
         const response: ErrorResponseDto = {
           httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
-          errorMessage: "Something went wrong! Please try again later.",
+          errorMessage: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
           apiPath: req.path,
           timestamp: new Date().toISOString(),
         };
@@ -330,45 +331,156 @@ class TaskController {
   }
 
   async createTaskDependency(req: express.Request, res: express.Response) {
-    const id = await DependencyService.create(
-      req.params.taskId,
-      req.body.dependsOnTaskId
-    );
+    try {
+      const id = await DependencyService.create(
+        req.params.taskId,
+        req.body.dependsOnTaskId
+      );
 
-    const response: ResponseDto = {
-      httpStatus: HTTP_STATUS.CREATED,
-      message: "Task dependency created",
-      data: id,
-    };
+      const response: ResponseDto = {
+        httpStatus: HTTP_STATUS.CREATED,
+        message: "Task dependency created",
+        data: id,
+      };
 
-    res.status(HTTP_STATUS.CREATED).json(response);
+      res.status(HTTP_STATUS.CREATED).json(response);
+    } catch (error) {
+      if (error instanceof CreateTaskFailedException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.BAD_REQUEST,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.BAD_REQUEST).json(response);
+      } else if (error instanceof DatabaseErrorException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      } else if (error instanceof InternalErrorServerException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      } else {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      }
+    }
   }
 
   async listTaskDependencies(req: express.Request, res: express.Response) {
-    const dependencies = await DependencyService.list(req.params.taskId);
+    try {
+      const dependencies = await DependencyService.list(req.params.taskId);
 
-    const response: ResponseDto = {
-      httpStatus: HTTP_STATUS.OK,
-      message: "List of task dependencies",
-      data: dependencies,
-    };
+      const response: ResponseDto = {
+        httpStatus: HTTP_STATUS.OK,
+        message: "List of task dependencies",
+        data: dependencies,
+      };
 
-    res.status(HTTP_STATUS.OK).json(response);
+      res.status(HTTP_STATUS.OK).json(response);
+    } catch (error) {
+      if (error instanceof DatabaseErrorException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      } else if (error instanceof InternalErrorServerException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      } else {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      }
+    }
   }
 
   async deleteTaskDependency(req: express.Request, res: express.Response) {
-    const deleted = await DependencyService.delete(
-      req.params.taskId,
-      req.params.dependsOnTaskId
-    );
+    try {
+      const deleted = await DependencyService.delete(
+        req.params.taskId,
+        req.params.dependsOnTaskId
+      );
 
-    const response: ResponseDto = {
-      httpStatus: HTTP_STATUS.OK,
-      message: "Task dependency deleted",
-      data: `Task dependency ${deleted} deleted successfully`,
-    };
+      const response: ResponseDto = {
+        httpStatus: HTTP_STATUS.OK,
+        message: "Task dependency deleted",
+        data: `Task dependency ${deleted} deleted successfully`,
+      };
 
-    res.status(HTTP_STATUS.OK).json(response);
+      res.status(HTTP_STATUS.OK).json(response);
+    } catch (error) {
+      if (error instanceof DeleteDependencyFailedException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.NOT_FOUND,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.NOT_FOUND).json(response);
+      } else if (error instanceof DatabaseErrorException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      } else if (error instanceof InternalErrorServerException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      } else {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          errorMessage: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      }
+    }
   }
 }
 

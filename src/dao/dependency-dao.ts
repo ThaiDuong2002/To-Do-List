@@ -1,7 +1,9 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../config";
+import { ERROR_MESSAGES } from "../constants";
 import { DependencyDto } from "../dto";
+import { DatabaseErrorException } from "../exceptions";
 import { DependencyMapper } from "../mappers";
 
 class DependencyDao {
@@ -20,7 +22,7 @@ class DependencyDao {
         return dependencyId;
       }
     } catch (error) {
-      throw new Error(`Error creating dependency: ${error}`);
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 
@@ -33,7 +35,7 @@ class DependencyDao {
 
       return result.affectedRows;
     } catch (error) {
-      throw new Error(`Error deleting dependency: ${error}`);
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 
@@ -52,10 +54,10 @@ class DependencyDao {
         SELECT * FROM DependencyTree;
       `;
       const [results] = await db().query<RowDataPacket[]>(query, [id]);
-      
+
       return results.map((row) => DependencyMapper.toDto(row));
     } catch (error) {
-      throw new Error(`Error listing dependencies: ${error}`);
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
 }
