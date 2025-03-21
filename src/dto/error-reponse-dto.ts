@@ -1,5 +1,5 @@
 interface ErrorResponseDto {
-  errorMessage: string;
+  errorMessage: any;
   httpStatus: number;
   apiPath: string;
   timestamp: string;

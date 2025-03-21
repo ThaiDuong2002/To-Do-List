@@ -1,5 +1,10 @@
 import express from "express";
 import { TaskController } from "../controllers";
+import {
+  createDependencyValidation,
+  createTaskValidation,
+  updateTaskValidation,
+} from "../middlewares/validate";
 import CommonRoutes from "./common-route";
 
 class TaskRoutes extends CommonRoutes {
@@ -13,19 +18,19 @@ class TaskRoutes extends CommonRoutes {
     this.app
       .route(`${this.version}/tasks`)
       .get(TaskController.listTasks)
-      .post(TaskController.createTask);
+      .post(createTaskValidation, TaskController.createTask);
 
     this.app
       .route(`${this.version}/tasks/:taskId`)
       .all(TaskController.all)
       .get(TaskController.getTaskById)
-      .put(TaskController.updateTask)
+      .put(updateTaskValidation, TaskController.updateTask)
       .patch(TaskController.patchTask)
       .delete(TaskController.deleteTask);
 
     this.app
       .route(`${this.version}/tasks/:taskId/dependencies`)
-      .post(TaskController.createTaskDependency)
+      .post(createDependencyValidation, TaskController.createTaskDependency)
       .get(TaskController.listTaskDependencies);
 
     this.app
