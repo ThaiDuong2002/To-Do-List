@@ -21,7 +21,7 @@ class DependencyDao {
       } else {
         return dependencyId;
       }
-    } catch (error) {
+    } catch (error: any) {
       throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }
   }
@@ -56,6 +56,34 @@ class DependencyDao {
       const [results] = await db().query<RowDataPacket[]>(query, [id]);
 
       return results.map((row) => DependencyMapper.toDto(row));
+    } catch (error) {
+      throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
+    }
+  }
+
+  async isCircularDependency(
+    id: string,
+    dependsOnId: string
+  ): Promise<boolean> {
+    try {
+      const query = `
+        WITH RECURSIVE DependencyTree AS (
+            SELECT TaskID, DependsOnTaskID
+            FROM Dependencies
+            WHERE TaskID = ?
+            UNION
+            SELECT td.TaskID, td.DependsOnTaskID
+            FROM Dependencies td
+            INNER JOIN DependencyTree dt ON td.TaskID = dt.DependsOnTaskID
+        )
+        SELECT * FROM DependencyTree WHERE DependsOnTaskID = ?;
+      `;
+      const [results] = await db().query<RowDataPacket[]>(query, [
+        dependsOnId,
+        id,
+      ]);
+
+      return results.length > 0;
     } catch (error) {
       throw new DatabaseErrorException(ERROR_MESSAGES.DATABASE_ERROR);
     }

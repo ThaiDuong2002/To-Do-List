@@ -2,6 +2,7 @@ import express from "express";
 import { ERROR_MESSAGES, HTTP_STATUS } from "../constants";
 import { ErrorResponseDto, ResponseDto } from "../dto";
 import {
+  CircularDependenciesException,
   CreateTaskFailedException,
   DatabaseErrorException,
   DeleteDependencyFailedException,
@@ -345,6 +346,7 @@ class TaskController {
 
       res.status(HTTP_STATUS.CREATED).json(response);
     } catch (error) {
+      console.log(error instanceof CircularDependenciesException);
       if (error instanceof CreateTaskFailedException) {
         const response: ErrorResponseDto = {
           httpStatus: HTTP_STATUS.BAD_REQUEST,
@@ -372,6 +374,15 @@ class TaskController {
         };
 
         res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+      } else if (error instanceof CircularDependenciesException) {
+        const response: ErrorResponseDto = {
+          httpStatus: HTTP_STATUS.BAD_REQUEST,
+          errorMessage: error.message,
+          apiPath: req.path,
+          timestamp: new Date().toISOString(),
+        };
+
+        res.status(HTTP_STATUS.BAD_REQUEST).json(response);
       } else {
         const response: ErrorResponseDto = {
           httpStatus: HTTP_STATUS.INTERNAL_SERVER_ERROR,
@@ -430,7 +441,7 @@ class TaskController {
 
   async deleteTaskDependency(req: express.Request, res: express.Response) {
     try {
-      const deleted = await DependencyService.delete(
+      await DependencyService.delete(
         req.params.taskId,
         req.params.dependsOnTaskId
       );
@@ -438,7 +449,7 @@ class TaskController {
       const response: ResponseDto = {
         httpStatus: HTTP_STATUS.OK,
         message: "Task dependency deleted",
-        data: `Task dependency ${deleted} deleted successfully`,
+        data: `Task dependency ${req.params.dependsOnTaskId} deleted successfully`,
       };
 
       res.status(HTTP_STATUS.OK).json(response);

@@ -2,6 +2,7 @@ import { ERROR_MESSAGES } from "../constants";
 import { DependencyDao } from "../dao";
 import { DependencyDto } from "../dto";
 import {
+  CircularDependenciesException,
   CreateDependencyFailedException,
   DatabaseErrorException,
   DeleteDependencyFailedException,
@@ -27,18 +28,34 @@ class DependencyService implements DependencyServiceInterface {
 
   async create(id: string, dependsOnId: string): Promise<string> {
     try {
-      const result = await DependencyDao.create(id, dependsOnId);
+      const isCicurlarDependency = await DependencyDao.isCircularDependency(
+        id,
+        dependsOnId
+      );
 
-      if (result) {
-        return result;
-      } else {
-        throw new CreateDependencyFailedException(
-          ERROR_MESSAGES.CREATE_DEPENDENCY_FAILED
+      if (isCicurlarDependency) {
+        throw new CircularDependenciesException(
+          ERROR_MESSAGES.CIRCULAR_DEPENDENCY(id, dependsOnId)
         );
+      } else {
+        const result = await DependencyDao.create(id, dependsOnId);
+
+        if (result) {
+          return result;
+        } else {
+          throw new CreateDependencyFailedException(
+            ERROR_MESSAGES.CREATE_DEPENDENCY_FAILED
+          );
+        }
       }
     } catch (error) {
       if (error instanceof DatabaseErrorException) {
         throw new DatabaseErrorException(error.message);
+      } else if (
+        error instanceof CircularDependenciesException ||
+        error instanceof CreateDependencyFailedException
+      ) {
+        throw error;
       } else {
         throw new InternalErrorServerException(
           ERROR_MESSAGES.INTERNAL_SERVER_ERROR
@@ -47,13 +64,11 @@ class DependencyService implements DependencyServiceInterface {
     }
   }
 
-  async delete(id: string, dependsOnId: string): Promise<number> {
+  async delete(id: string, dependsOnId: string): Promise<void> {
     try {
       const result = await DependencyDao.delete(id, dependsOnId);
 
-      if (result == 1) {
-        return result;
-      } else {
+      if (result === 0) {
         throw new DeleteDependencyFailedException(
           ERROR_MESSAGES.DELETE_DEPENDENCY_FAILED
         );
@@ -61,6 +76,8 @@ class DependencyService implements DependencyServiceInterface {
     } catch (error) {
       if (error instanceof DatabaseErrorException) {
         throw new DatabaseErrorException(error.message);
+      } else if (error instanceof DeleteDependencyFailedException) {
+        throw error;
       } else {
         throw new InternalErrorServerException(
           ERROR_MESSAGES.INTERNAL_SERVER_ERROR

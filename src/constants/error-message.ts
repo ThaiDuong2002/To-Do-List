@@ -5,7 +5,8 @@ const ERROR_MESSAGES = {
   TASK_UPDATE_FAILED: "Task update failed.",
   TASK_DELETION_FAILED: "Task deletion failed.",
   TASK_ALREADY_EXISTS: "Task already exists.",
-  CIRCULAR_DEPENDENCY: "Circular dependency detected.",
+  CIRCULAR_DEPENDENCY: (id: string, dependsOnId: string) =>
+    `Circular dependency detected between ${id} and ${dependsOnId}.`,
   CREATE_DEPENDENCY_FAILED: "Task dependency creation failed.",
   DELETE_DEPENDENCY_FAILED: "Task dependency deletion failed.",
   INTERNAL_SERVER_ERROR: "Something went wrong! Please try again later.",
