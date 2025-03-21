@@ -51,7 +51,7 @@ class DependencyDao {
             FROM Dependencies td
             INNER JOIN DependencyTree dt ON td.TaskID = dt.DependsOnTaskID
         )
-        SELECT * FROM DependencyTree;
+        SELECT TaskID, DependsOnTaskID FROM DependencyTree;
       `;
       const [results] = await db().query<RowDataPacket[]>(query, [id]);
 
@@ -76,7 +76,7 @@ class DependencyDao {
             FROM Dependencies td
             INNER JOIN DependencyTree dt ON td.TaskID = dt.DependsOnTaskID
         )
-        SELECT * FROM DependencyTree WHERE DependsOnTaskID = ?;
+        SELECT TaskID, DependsOnTaskID FROM DependencyTree WHERE DependsOnTaskID = ?;
       `;
       const [results] = await db().query<RowDataPacket[]>(query, [
         dependsOnId,

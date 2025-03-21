@@ -39,7 +39,8 @@ class TaskDao {
     status?: string,
     priority?: string
   ): Promise<TaskDto[]> {
-    let query = "SELECT * FROM Tasks WHERE 1=1";
+    let query =
+      "SELECT TaskID, Title, Description, DueDate, Priority, Status, CreatedAt, UpdatedAt FROM Tasks WHERE 1=1";
     const params = [];
 
     limit = limit || 10;
@@ -74,7 +75,7 @@ class TaskDao {
   async findOne(taskId: string): Promise<TaskDto | null> {
     try {
       const [tasks] = await db().query<RowDataPacket[]>(
-        "SELECT * FROM Tasks WHERE TaskId = ?",
+        "SELECT TaskID, Title, Description, DueDate, Priority, Status, CreatedAt, UpdatedAt FROM Tasks WHERE TaskId = ?",
         [taskId]
       );
 
