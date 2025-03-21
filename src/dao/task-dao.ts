@@ -12,8 +12,6 @@ class TaskDao {
       const fields = Object.keys(taskFields);
       const values = Object.values(taskFields);
 
-      console.log(fields, values);
-
       const taskId = uuidv4();
 
       const query = `INSERT INTO Tasks (TaskId, ${fields.join(
