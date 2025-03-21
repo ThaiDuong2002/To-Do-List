@@ -346,7 +346,6 @@ class TaskController {
 
       res.status(HTTP_STATUS.CREATED).json(response);
     } catch (error) {
-      console.log(error instanceof CircularDependenciesException);
       if (error instanceof CreateTaskFailedException) {
         const response: ErrorResponseDto = {
           httpStatus: HTTP_STATUS.BAD_REQUEST,

@@ -17,7 +17,7 @@ class DependencyService implements DependencyServiceInterface {
       return result;
     } catch (error) {
       if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
+        throw error;
       } else {
         throw new InternalErrorServerException(
           ERROR_MESSAGES.INTERNAL_SERVER_ERROR
@@ -49,9 +49,8 @@ class DependencyService implements DependencyServiceInterface {
         }
       }
     } catch (error) {
-      if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
-      } else if (
+      if (
+        error instanceof DatabaseErrorException ||
         error instanceof CircularDependenciesException ||
         error instanceof CreateDependencyFailedException
       ) {
@@ -74,9 +73,10 @@ class DependencyService implements DependencyServiceInterface {
         );
       }
     } catch (error) {
-      if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
-      } else if (error instanceof DeleteDependencyFailedException) {
+      if (
+        error instanceof DatabaseErrorException ||
+        error instanceof DeleteDependencyFailedException
+      ) {
         throw error;
       } else {
         throw new InternalErrorServerException(

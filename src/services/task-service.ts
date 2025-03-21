@@ -24,7 +24,7 @@ class TaskService implements TaskServiceInterface {
       return result;
     } catch (error) {
       if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
+        throw error;
       } else {
         throw new InternalErrorServerException(
           ERROR_MESSAGES.INTERNAL_SERVER_ERROR
@@ -43,9 +43,10 @@ class TaskService implements TaskServiceInterface {
       }
       return result;
     } catch (error) {
-      if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
-      } else if (error instanceof CreateTaskFailedException) {
+      if (
+        error instanceof CreateTaskFailedException ||
+        error instanceof DatabaseErrorException
+      ) {
         throw error;
       } else {
         throw new InternalErrorServerException(
@@ -64,9 +65,10 @@ class TaskService implements TaskServiceInterface {
         throw new TaskNotFoundException(ERROR_MESSAGES.TASK_NOT_FOUND(id));
       }
     } catch (error) {
-      if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
-      } else if (error instanceof TaskNotFoundException) {
+      if (
+        error instanceof DatabaseErrorException ||
+        error instanceof TaskNotFoundException
+      ) {
         throw error;
       } else {
         throw new InternalErrorServerException(
@@ -83,9 +85,10 @@ class TaskService implements TaskServiceInterface {
         throw new UpdateTaskFailedException(ERROR_MESSAGES.TASK_UPDATE_FAILED);
       }
     } catch (error) {
-      if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
-      } else if (error instanceof UpdateTaskFailedException) {
+      if (
+        error instanceof DatabaseErrorException ||
+        error instanceof UpdateTaskFailedException
+      ) {
         throw error;
       } else {
         throw new InternalErrorServerException(
@@ -102,9 +105,10 @@ class TaskService implements TaskServiceInterface {
         throw new UpdateTaskFailedException(ERROR_MESSAGES.TASK_UPDATE_FAILED);
       }
     } catch (error) {
-      if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
-      } else if (error instanceof UpdateTaskFailedException) {
+      if (
+        error instanceof DatabaseErrorException ||
+        error instanceof UpdateTaskFailedException
+      ) {
         throw error;
       } else {
         throw new InternalErrorServerException(
@@ -123,9 +127,10 @@ class TaskService implements TaskServiceInterface {
         );
       }
     } catch (error) {
-      if (error instanceof DatabaseErrorException) {
-        throw new DatabaseErrorException(error.message);
-      } else if (error instanceof DeleteTaskFailedException) {
+      if (
+        error instanceof DatabaseErrorException ||
+        error instanceof DeleteTaskFailedException
+      ) {
         throw error;
       } else {
         throw new InternalErrorServerException(
