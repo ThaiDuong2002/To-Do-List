@@ -1,9 +1,13 @@
+import dotenv from "dotenv";
 import { RowDataPacket } from "mysql2";
 import cron from "node-cron";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "./db";
 
-const schedule = cron.schedule("* * * * *", async () => {
+dotenv.config();
+const SCHEDULER_CONFIG = process.env.SCHEDULER_CONFIG || "0 * * * *";
+
+const schedule = cron.schedule(SCHEDULER_CONFIG, async () => {
   const overdueQuery = `
             SELECT TaskID, Title, DueDate
             FROM Tasks
